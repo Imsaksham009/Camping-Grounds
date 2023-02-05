@@ -1,0 +1,62 @@
+<% layout("boilerplate/boilerplate") -%>
+
+    <div class="row">
+        <h1 class="text-center">New CampGround</h1>
+        <div class="col-6 offset-3">
+            <form action="/campgrounds" class="needs-validation" method="post" novalidate>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Enter the Title: </label>
+                    <input type="text" class="form-control" id="title" name="title" placeholder="Enter the title"
+                        required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please provide a valid title.
+                    </div>
+
+                </div>
+
+
+                <div class="mb-3">
+                    <label for="location" class="form-label">Enter the location: </label>
+                    <input type="text" class="form-control" id="location" name="location"
+                        placeholder="Enter the location" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please provide a valid location.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="price" class="form-label">Enter the price: </label>
+                    <input type="number" class="form-control" name="price" id="price" min="1" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please provide a valid price.
+                    </div>
+                </div>
+
+
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description: </label>
+                    <textarea class="form-control" name="description" id="description" cols="30" rows="3"
+                        required></textarea>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please provide a valid description.
+                    </div>
+                </div>
+
+
+                <button type="submit" class="btn btn-dark mt-2">Add to CampGround</button>
+            </form>
+        </div>
+    </div>
