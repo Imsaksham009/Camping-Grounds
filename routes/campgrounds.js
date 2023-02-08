@@ -83,6 +83,7 @@ router.post(
 		const newGround = new Campground(req.body);
 		newGround.image = await getImg();
 		await newGround.save();
+		req.flash("success", "Added a new Campground");
 		res.redirect("/campgrounds");
 	})
 );
