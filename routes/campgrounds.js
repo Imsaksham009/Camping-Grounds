@@ -29,7 +29,7 @@ router.get(
 	"/",
 	wrapSync(async (req, res, next) => {
 		const foundGrounds = await Campground.find({});
-		if (!foundGrounds) throw new AppError("NOT FOUND", 500);
+		if (!foundGrounds) throw new AppError("NOT FOUND", 404);
 		res.render("campgrounds/index", { foundGrounds });
 	})
 );
