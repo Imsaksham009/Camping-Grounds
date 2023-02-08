@@ -1,6 +1,9 @@
 const express = require("express");
 const methodOverride = require("method-override");
 const ejsmate = require("ejs-mate");
+const session = require("express-session");
+const flash = require("connect-flash");
+
 const AppError = require("./utils/Error"); //Apperror class
 
 const app = express();
@@ -28,6 +31,21 @@ app.set("views", __dirname + "/templateEJS");
 app.use(methodOverride("_method"));
 app.use(express.static(__dirname + "/public"));
 app.use(express.urlencoded({ extended: true }));
+
+//session cookie
+app.use(
+	session({
+		secret: "IAMASECRETEHICHISVERYMUCHABIGSECRET",
+		resave: false,
+		saveUninitialized: true,
+		cookie: {
+			httpOnly: true,
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+		},
+	})
+);
+
+app.use(flash());
 
 //get routes
 app.use("/campgrounds", campgrounds);
