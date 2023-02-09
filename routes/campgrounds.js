@@ -54,7 +54,10 @@ router.get(
 	wrapSync(async (req, res) => {
 		const { id } = req.params;
 		const foundGround = await Campground.findById(id).populate("reviews");
-		if (!foundGround) throw new AppError("Id NOT FOUND", 404);
+		if (!foundGround) {
+			req.flash("error", "Campground Not found");
+			return res.redirect("/campgrounds");
+		}
 		res.render("campgrounds/show", foundGround);
 	})
 );

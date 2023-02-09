@@ -34,6 +34,7 @@ router.post(
 		await newReview.save();
 		const d = await campground.save();
 		// console.log(d);
+		req.flash("success", "Thanks for the review");
 		res.redirect(`/campgrounds/${id}`);
 	})
 );
