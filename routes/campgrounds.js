@@ -29,7 +29,10 @@ router.get(
 	"/",
 	wrapSync(async (req, res, next) => {
 		const foundGrounds = await Campground.find({});
-		if (!foundGrounds) throw new AppError("NOT FOUND", 404);
+		// if (!foundGrounds) {
+		// 	req.flash("error", "Campground Not found");
+		// 	return res.redirect("/campgrounds");
+		// }
 		res.render("campgrounds/index", { foundGrounds });
 	})
 );
@@ -43,7 +46,10 @@ router.get(
 	wrapSync(async (req, res) => {
 		const { id } = req.params;
 		const foundGround = await Campground.findById(id);
-		if (!foundGround) throw new AppError("Id NOT FOUND", 404);
+		if (!foundGround) {
+			req.flash("error", "Campground Not found");
+			return res.redirect("/campgrounds");
+		}
 		res.render("campgrounds/edit", foundGround);
 	})
 );
@@ -104,6 +110,7 @@ router.delete(
 	"/:id",
 	wrapSync(async (req, res) => {
 		await Campground.findByIdAndDelete(req.params.id);
+		req.flash("success", "Deleted the Campground");
 		res.redirect(`/campgrounds`);
 	})
 );
