@@ -34,18 +34,21 @@ router.get("/login", (req, res) => {
 	res.render("./users/login");
 });
 
-router.post("/login", passport.authenticate("local", {failureRedirect: "/user/login", failureFlash: true}), (req, res) => {
+router.post("/login", passport.authenticate("local", {failureRedirect: "/user/login", failureFlash: true,keepSessionInfo: true}), (req, res) => {
 		req.flash("success","Welcome Back");
-		res.redirect("/campgrounds");
+		const redirectPath = req.session.returnTo || '/campgrounds';
+		console.log(redirectPath);
+		res.redirect(redirectPath);
 	}
 );
 
 router.get("/logout",(req,res)=>{
 	req.logout((err)=>{
 		if(err) console.log(err)
+		req.flash("success","Logged Out Successfully");
+		res.redirect("/user/login")
 	});
-	req.flash("success","Logged Out Successfully");
-	res.redirect("/user/login")
+
 })
 
 module.exports = router;

@@ -2,10 +2,11 @@ const Joi = require("Joi");
 
 module.exports.isLoggedin = function (req, res, next) {
 	if (!req.isAuthenticated()) {
+		req.session.returnTo = req.originalUrl;
 		req.flash("error", "User must be signed in");
 		return res.redirect("/user/login");
 	}
-	next();
+	next();	
 };
 
 module.exports.needValidationForUser = function (req, res, next) {
