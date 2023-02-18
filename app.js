@@ -36,8 +36,7 @@ app.use(express.static(__dirname + "/public"));
 app.use(express.urlencoded({ extended: true }));
 
 //session & cookie
-app.use(
-	session({
+app.use(session({
 		secret: "IAMASECRETEHICHISVERYMUCHABIGSECRET",
 		resave: false,
 		saveUninitialized: true,

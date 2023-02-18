@@ -1,8 +1,8 @@
 <% layout("boilerplate/boilerplate")  %>
 
 
-<form action="/login" method="post">
-    <h1>Register</h1>
+<form action="/user/login" method="post" class="needs-validation col-4 offset-3" novalidate>
+    <h1>Login</h1>
     <div>
         <label class="form-label" for="email">E-mail: </label>
         <input class="form-control" type="email" id="email" name="email" required>
@@ -33,5 +33,5 @@
             Please provide a valid password.
         </div>
     </div>
-    <button class="btn btn-primary mt-4">Register</button>
+    <button class="btn btn-primary mt-4">Login</button>
 </form>

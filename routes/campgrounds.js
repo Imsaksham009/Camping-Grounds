@@ -1,5 +1,4 @@
 const express = require("express");
-const Joi = require("joi");
 const axios = require("axios");
 const wrapSync = require("../utils/catchAsync"); //WrapAsync function
 const AppError = require("../utils/Error"); //Apperror class
@@ -8,26 +7,9 @@ const Campground = require("../model/campground");
 
 const router = express.Router();
 
-const validateReqBody = function (req, res, next) {
-	const schema = Joi.object({
-		title: Joi.string().required(),
-		price: Joi.number().min(0).required(),
-		description: Joi.string().required(),
-		location: Joi.string().required(),
-	}).validate(req.body);
+const {isLoggedin, validateNewCampground: validateReqBody} = require("../middleware/middleware");
 
-	if (schema.error) {
-		const msg = schema.error.details.map((er) => {
-			return er.message;
-		});
-		throw new AppError(msg, 400);
-	}
-	next();
-};
-
-router.get(
-	"/",
-	wrapSync(async (req, res, next) => {
+router.get("/", wrapSync(async (req, res, next) => {
 		const foundGrounds = await Campground.find({});
 		// if (!foundGrounds) {
 		// 	req.flash("error", "Campground Not found");
@@ -37,13 +19,11 @@ router.get(
 	})
 );
 
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedin, (req, res) => {
 	res.render("campgrounds/new");
 });
 
-router.get(
-	"/:id/edit",
-	wrapSync(async (req, res) => {
+router.get("/:id/edit", isLoggedin, wrapSync(async (req, res) => {
 		const { id } = req.params;
 		const foundGround = await Campground.findById(id);
 		if (!foundGround) {
@@ -55,9 +35,7 @@ router.get(
 );
 
 //id
-router.get(
-	"/:id",
-	wrapSync(async (req, res) => {
+router.get(	"/:id", wrapSync(async (req, res) => {
 		const { id } = req.params;
 		const foundGround = await Campground.findById(id).populate("reviews");
 		if (!foundGround) {
@@ -69,10 +47,7 @@ router.get(
 );
 
 //post routes
-router.post(
-	"/",
-	validateReqBody,
-	wrapSync(async (req, res, next) => {
+router.post("/new", validateReqBody, isLoggedin, wrapSync(async (req, res, next) => {
 		const params = {
 			client_id: "D-IBhFeMwleCj-DJ-hZyNuLvXthxeMuh3ooDrXZyOv0",
 			collections: 483251,
@@ -97,18 +72,13 @@ router.post(
 	})
 );
 
-router.put(
-	"/:id",
-	validateReqBody,
-	wrapSync(async (req, res) => {
+router.put(	"/:id",	validateReqBody, isLoggedin, wrapSync(async (req, res) => {
 		await Campground.findByIdAndUpdate(req.params.id, req.body);
 		res.redirect(`/campgrounds/${req.params.id}`);
 	})
 );
 
-router.delete(
-	"/:id",
-	wrapSync(async (req, res) => {
+router.delete("/:id", wrapSync(async (req, res) => {
 		await Campground.findByIdAndDelete(req.params.id);
 		req.flash("success", "Deleted the Campground");
 		res.redirect(`/campgrounds`);

@@ -1,28 +1,14 @@
 const express = require("express");
-const Joi = require("joi");
+const passport = require("passport");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/Error");
+
+const {needValidationForUser: needValidation} = require("../middleware/middleware");
 
 const router = express.Router();
 
 //model
 const User = require("../model/user");
-
-const needValidation = function (req, res, next) {
-	const schema = Joi.object({
-		username: Joi.string().alphanum().min(3).max(30).required(),
-		email: Joi.string().required(),
-		password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
-	}).validate(req.body);
-
-	if (schema.error) {
-		const msg = schema.error.details.map((er) => {
-			return er.message;
-		});
-		throw new AppError(msg, 400);
-	}
-	next();
-};
 
 router.get("/register", (req, res) => {
 	res.render("./users/newUser");
@@ -44,7 +30,22 @@ router.post("/register", needValidation, async (req, res) => {
 });
 
 router.get("/login", (req, res) => {
+	if (req.isAuthenticated()) res.redirect("/campgrounds");
 	res.render("./users/login");
 });
+
+router.post("/login", passport.authenticate("local", {failureRedirect: "/user/login", failureFlash: true}), (req, res) => {
+		req.flash("success","Welcome Back");
+		res.redirect("/campgrounds");
+	}
+);
+
+router.get("/logout",(req,res)=>{
+	req.logout((err)=>{
+		if(err) console.log(err)
+	});
+	req.flash("success","Logged Out Successfully");
+	res.redirect("/user/login")
+})
 
 module.exports = router;
