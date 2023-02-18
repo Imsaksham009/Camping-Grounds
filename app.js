@@ -3,6 +3,8 @@ const methodOverride = require("method-override");
 const ejsmate = require("ejs-mate");
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 
 const AppError = require("./utils/Error"); //Apperror class
 
@@ -11,8 +13,9 @@ const PORT = 5000;
 
 const mongoose = require("mongoose");
 
-const campgrounds = require("./routes/campgrounds");
-const reviews = require("./routes/reviews");
+const userRoutes = require("./routes/user");
+const campgroundRoutes = require("./routes/campgrounds");
+const reviewRoutes = require("./routes/reviews");
 
 //mongoose connection
 mongoose
@@ -32,7 +35,7 @@ app.use(methodOverride("_method"));
 app.use(express.static(__dirname + "/public"));
 app.use(express.urlencoded({ extended: true }));
 
-//session cookie
+//session & cookie
 app.use(
 	session({
 		secret: "IAMASECRETEHICHISVERYMUCHABIGSECRET",
@@ -45,19 +48,29 @@ app.use(
 	})
 );
 
+//flash Messages
 app.use(flash());
-
 app.use((req, res, next) => {
 	res.locals.success = req.flash("success");
 	res.locals.error = req.flash("error");
 	next();
 });
 
-//get routes
-app.use("/campgrounds", campgrounds);
+//user model for passport
+const User = require("./model/user");
 
-// Review Routes
-app.use("/campgrounds/:id/reviews", reviews);
+//passport middlewares
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+//Routes
+app.use("/user", userRoutes);
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/reviews", reviewRoutes);
 
 //Page not found error
 app.all("*", (req, res, next) => {
