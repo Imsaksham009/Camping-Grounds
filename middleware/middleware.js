@@ -2,6 +2,7 @@ const Joi = require("Joi");
 const AppError = require("../utils/Error");
 const catchAsync = require("../utils/catchAsync");
 const Campground = require("../model/campground");
+const Review = require("../model/reviews");
 
 module.exports.isLoggedin = function (req, res, next) {
 	if (!req.isAuthenticated()) {
@@ -20,6 +21,20 @@ module.exports.isAuthor = async (req, res, next) => {
 		return res.redirect("/campgrounds");
 	}
 	if (foundGround && !foundGround.author.equals(req.user._id)) {
+		req.flash("error", "Not Authenticated");
+		return res.redirect(`/campgrounds/${id}`);
+	}
+	next();
+
+};
+module.exports.isReviewAuthor = async (req, res, next) => {
+	const { id, reviewId } = req.params;
+	const foundReview = await Review.findById(reviewId);
+	if (!foundReview) {
+		req.flash("error", "Campground Not Found");
+		return res.redirect("/campgrounds");
+	}
+	if (foundReview && !foundReview.author.equals(req.user._id)) {
 		req.flash("error", "Not Authenticated");
 		return res.redirect(`/campgrounds/${id}`);
 	}

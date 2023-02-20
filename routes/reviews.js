@@ -6,6 +6,8 @@ const AppError = require("../utils/Error"); //Apperror class
 const Campground = require("../model/campground");
 const Review = require("../model/reviews");
 
+const { isLoggedin, isReviewAuthor } = require("../middleware/middleware");
+
 const router = express.Router({ mergeParams: true });
 
 const validateReviewBody = function (req, res, next) {
@@ -25,11 +27,13 @@ const validateReviewBody = function (req, res, next) {
 
 router.post(
 	"/",
+	isLoggedin,
 	validateReviewBody,
 	wrapSync(async (req, res, next) => {
 		const { id } = req.params;
 		const campground = await Campground.findById(id);
 		const newReview = new Review(req.body);
+		newReview.author = req.user._id;
 		campground.reviews.push(newReview);
 		await newReview.save();
 		const d = await campground.save();
@@ -41,6 +45,8 @@ router.post(
 
 router.delete(
 	"/:reviewId",
+	isLoggedin,
+	isReviewAuthor,
 	wrapSync(async (req, res, next) => {
 		const { id, reviewId } = req.params;
 		await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
