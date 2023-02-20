@@ -29,7 +29,7 @@ mongoose
 //middleware and setters
 app.engine("ejs", ejsmate);
 app.set("view engine", "ejs");
-app.set("views", __dirname + "/templateEJS");
+app.set("views", __dirname + "/views");
 
 app.use(methodOverride("_method"));
 app.use(express.static(__dirname + "/public"));
@@ -37,14 +37,14 @@ app.use(express.urlencoded({ extended: true }));
 
 //session & cookie
 app.use(session({
-		secret: "IAMASECRETEHICHISVERYMUCHABIGSECRET",
-		resave: false,
-		saveUninitialized: true,
-		cookie: {
-			httpOnly: true,
-			maxAge: 7 * 24 * 60 * 60 * 1000,
-		},
-	})
+	secret: "IAMASECRETEHICHISVERYMUCHABIGSECRET",
+	resave: false,
+	saveUninitialized: true,
+	cookie: {
+		httpOnly: true,
+		maxAge: 7 * 24 * 60 * 60 * 1000,
+	},
+})
 );
 
 

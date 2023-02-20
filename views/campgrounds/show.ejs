@@ -19,16 +19,21 @@
                         <%= location %>
                     </li>
                     <li class="list-group-item">
+                       Added by <%= author.username %>
+                    </li>
+                    <li class="list-group-item">
                         Price: $<%= price %>/night
                     </li>
                 </ul>
-
+            
+            <% if(currentUser && author && (currentUser.id === author.id)){ %>
                 <div class="card-body">
                     <a href="/campgrounds/<%= id %>/edit " class="card-link btn btn-info">Edit this CampGround</a>
                     <form class="d-inline" method="POST" action="/campgrounds/<%= id %>?_method=DELETE">
                         <button class="btn btn-danger ms-3">DELETE</button>
                     </form>
                 </div>
+                <% } %>
             </div>
         </div>
 
