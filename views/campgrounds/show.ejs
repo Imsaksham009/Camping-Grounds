@@ -51,8 +51,21 @@
 
                 </div>
                 <div>
-                    <label for="rating" class="form-label">Ratings: </label>
-                    <input type="range" class="form-range" min="1" max="5" id="rating" name="rating">
+                    <label for="rating" class="form-label">Rating: </label>
+                    <fieldset class="starability-basic">
+                        <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="0" checked aria-label="No rating." />
+                        <input type="radio" id="first-rate1" name="rating" value="1" />
+                        <label for="first-rate1" title="Terrible">1 star</label>
+                        <input type="radio" id="first-rate2" name="rating" value="2" />
+                        <label for="first-rate2" title="Not good">2 stars</label>
+                        <input type="radio" id="first-rate3" name="rating" value="3" />
+                        <label for="first-rate3" title="Average">3 stars</label>
+                        <input type="radio" id="first-rate4" name="rating" value="4" />
+                        <label for="first-rate4" title="Very good">4 stars</label>
+                        <input type="radio" id="first-rate5" name="rating" value="5" />
+                        <label for="first-rate5" title="Amazing">5 stars</label>
+                      </fieldset>
+                      
                 </div>
                 <button class="btn btn-primary">Add</button>
             </form>
@@ -68,7 +81,7 @@
                         <div class="card mb-4">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    Rating: <%= review.rating %>
+                                    Rating: <p class="starability-result" data-rating=<%= review.rating %>></p>                                    
                                 </h5>
                                 <h6 class="card-subtitle mb-2 text-muted"> By <%= review.author.username %></h6>
                                 <p class="card-text">
