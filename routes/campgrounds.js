@@ -4,6 +4,7 @@ const wrapSync = require("../utils/catchAsync"); //WrapAsync function
 const AppError = require("../utils/Error"); //Apperror class
 
 const Campground = require("../model/campground");
+const Review = require("../model/reviews");
 
 const router = express.Router();
 
@@ -41,6 +42,10 @@ router.get("/:id", wrapSync(async (req, res) => {
 		req.flash("error", "Campground Not found");
 		return res.redirect("/campgrounds");
 	}
+	for (let review of foundGround.reviews) {
+		await review.populate("author");
+	}
+
 	res.render("campgrounds/show", foundGround);
 })
 );
