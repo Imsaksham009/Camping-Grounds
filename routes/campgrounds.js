@@ -7,7 +7,7 @@ const Campground = require("../model/campground");
 
 const router = express.Router();
 
-const { isLoggedin, validateNewCampground: validateReqBody } = require("../middleware/middleware");
+const { isLoggedin, validateNewCampground: validateReqBody, isAuthor } = require("../middleware/middleware");
 
 
 router.get("/", wrapSync(async (req, res, next) => {
@@ -20,19 +20,13 @@ router.get("/new", isLoggedin, (req, res) => {
 	res.render("campgrounds/new");
 });
 
-router.get("/:id/edit", isLoggedin, wrapSync(async (req, res) => {
+router.get("/:id/edit", isLoggedin, isAuthor, wrapSync(async (req, res) => {
 	const { id } = req.params;
 	const foundGround = await Campground.findById(id);
 
 	if (!foundGround) {
 		req.flash("error", "Campground Not found");
 		return res.redirect("/campgrounds");
-	}
-	if (!foundGround.author.equals(req.user._id)) {
-		console.log(foundGround.author, req.user._id);
-
-		req.flash("error", "Not Authenticated");
-		return res.redirect(`/campgrounds/${id}`);
 	}
 
 	res.render("campgrounds/edit", foundGround);
@@ -79,19 +73,14 @@ router.post("/new", isLoggedin, validateReqBody, wrapSync(async (req, res, next)
 })
 );
 
-router.put("/:id", validateReqBody, wrapSync(async (req, res) => {
+router.put("/:id", isLoggedin, isAuthor, validateReqBody, wrapSync(async (req, res) => {
 	const found = await Campground.findById(req.params.id);
-	if (found.author != req.user.id) {
-		console.log(found.author, req.user.id);
-		req.flash("error", "Not Authenticssated");
-		return res.redirect(`/campgrounds/${req.params.id}`);
-	}
-	await found.update(req.body);
+	await found.updateOne(req.body);
 	res.redirect(`/campgrounds/${req.params.id}`);
 })
 );
 
-router.delete("/:id", wrapSync(async (req, res) => {
+router.delete("/:id", isLoggedin, isAuthor, wrapSync(async (req, res) => {
 	await Campground.findByIdAndDelete(req.params.id);
 	req.flash("success", "Deleted the Campground");
 	res.redirect(`/campgrounds`);

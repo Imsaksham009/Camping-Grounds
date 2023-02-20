@@ -1,4 +1,7 @@
 const Joi = require("Joi");
+const AppError = require("../utils/Error");
+const catchAsync = require("../utils/catchAsync");
+const Campground = require("../model/campground");
 
 module.exports.isLoggedin = function (req, res, next) {
 	if (!req.isAuthenticated()) {
@@ -6,7 +9,22 @@ module.exports.isLoggedin = function (req, res, next) {
 		req.flash("error", "User must be signed in");
 		return res.redirect("/user/login");
 	}
-	next();	
+	next();
+};
+
+module.exports.isAuthor = async (req, res, next) => {
+	const { id } = req.params;
+	const foundGround = await Campground.findById(id);
+	if (!foundGround) {
+		req.flash("error", "Campground Not Found");
+		return res.redirect("/campgrounds");
+	}
+	if (foundGround && !foundGround.author.equals(req.user._id)) {
+		req.flash("error", "Not Authenticated");
+		return res.redirect(`/campgrounds/${id}`);
+	}
+	next();
+
 };
 
 module.exports.needValidationForUser = function (req, res, next) {
