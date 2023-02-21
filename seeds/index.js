@@ -39,10 +39,12 @@ const saveDB = async () => {
 			const img = await getImg();
 			const id = "63f275665eac714a5bb53f63";
 			const newGround = new Campground({
-				author:id,
+				author: id,
 				location: `${cities[randCityNum].city}, ${cities[randCityNum].state}`,
 				title: `${descriptors[randName1]} ${places[randName2]}`,
-				image: img,
+				image: {
+					url: img
+				},
 				price,
 				description:
 					"Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ut, quam labore mollitia ex modi nihil perferendis perspiciatis esse rem asperiores consequatur totam consectetur cupiditate illo aspernatur voluptate laudantium recusandae nulla?			Repellat minima fuga tempore soluta quas dignissimos vel quo quis, odio corporis quod ex id sint cupiditate. Nostrum, eum. Sapiente nihil labore quod expedita itaque soluta corrupti dignissimos voluptas. Maiores!",

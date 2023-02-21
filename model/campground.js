@@ -5,12 +5,15 @@ const Review = require("./reviews");
 const campgroundSchema = new Schema({
 	title: String,
 	price: Number,
-	image: String,
+	image: {
+		url: String,
+		filename: String
+	},
 	description: String,
 	location: String,
-	author:{
+	author: {
 		type: Schema.Types.ObjectId,
-		ref:"User"
+		ref: "User"
 	},
 	reviews: [
 		{

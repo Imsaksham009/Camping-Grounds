@@ -1,3 +1,8 @@
+if (process.env.NODE_ENV !== "production") {
+	require("dotenv").config();
+}
+
+
 const express = require("express");
 const methodOverride = require("method-override");
 const ejsmate = require("ejs-mate");
@@ -37,7 +42,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //session & cookie
 app.use(session({
-	secret: "IAMASECRETEHICHISVERYMUCHABIGSECRET",
+	secret: process.env.SECRET,
 	resave: false,
 	saveUninitialized: true,
 	cookie: {

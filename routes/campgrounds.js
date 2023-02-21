@@ -1,14 +1,25 @@
+if (process.env.NODE_ENV !== "production") {
+	require("dotenv").config();
+}
 const express = require("express");
 const axios = require("axios");
+const multer = require("multer");
+const { storage } = require("../cloudinary/index");
+const upload = multer({ storage });
+
+
+//utils
 const wrapSync = require("../utils/catchAsync"); //WrapAsync function
 const AppError = require("../utils/Error"); //Apperror class
 
+//model
 const Campground = require("../model/campground");
-const Review = require("../model/reviews");
+
 
 const router = express.Router();
 
-const { isLoggedin, validateNewCampground: validateReqBody, isAuthor } = require("../middleware/middleware");
+const { isLoggedin, validateNewCampground: validateReqBody, isAuthor, validateNewCampground } = require("../middleware/middleware");
+
 
 
 router.get("/", wrapSync(async (req, res, next) => {
@@ -51,32 +62,21 @@ router.get("/:id", wrapSync(async (req, res) => {
 );
 
 //post routes
-router.post("/new", isLoggedin, validateReqBody, wrapSync(async (req, res, next) => {
-	const params = {
-		client_id: "D-IBhFeMwleCj-DJ-hZyNuLvXthxeMuh3ooDrXZyOv0",
-		collections: 483251,
-	};
-
-	const getImg = async function () {
-		try {
-			const res = await axios.get("https://api.unsplash.com/photos/random", {
-				params,
-			});
-			return res.data.urls.regular;
-		} catch (e) {
-			throw new AppError(e.code, 404);
-		}
-	};
-
+router.post("/new", isLoggedin, upload.single('image'), wrapSync(async (req, res, next) => {
 	const newGround = new Campground(req.body);
 	newGround.author = req.user.id;
-	newGround.image = await getImg();
-	console.log(newGround);
+	newGround.image.url = req.file.path;
+	newGround.image.filename = req.file.filename;
 	await newGround.save();
 	req.flash("success", "Added a new Campground");
 	res.redirect("/campgrounds");
 })
 );
+
+// router.post("/new", upload.single('image'), (req, res) => {
+// 	console.log(req.body, req.file);
+// 	res.send("req.body, req.file");
+// });
 
 router.put("/:id", isLoggedin, isAuthor, validateReqBody, wrapSync(async (req, res) => {
 	const found = await Campground.findById(req.params.id);
