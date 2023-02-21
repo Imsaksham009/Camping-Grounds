@@ -4,7 +4,7 @@ if (process.env.NODE_ENV !== "production") {
 const express = require("express");
 const axios = require("axios");
 const multer = require("multer");
-const { storage } = require("../cloudinary/index");
+const { storage, cloudinary } = require("../cloudinary/index");
 const upload = multer({ storage });
 
 
@@ -73,20 +73,22 @@ router.post("/new", isLoggedin, upload.single('image'), wrapSync(async (req, res
 })
 );
 
-// router.post("/new", upload.single('image'), (req, res) => {
-// 	console.log(req.body, req.file);
-// 	res.send("req.body, req.file");
-// });
-
-router.put("/:id", isLoggedin, isAuthor, validateReqBody, wrapSync(async (req, res) => {
+router.put("/:id", isLoggedin, isAuthor, upload.single('image'), validateReqBody, wrapSync(async (req, res) => {
 	const found = await Campground.findById(req.params.id);
+	if (found.image.url) {
+		cloudinary.uploader.destroy(found.image.filename);
+	}
+	found.image.url = req.file.path;
+	found.image.filename = req.file.filename;
 	await found.updateOne(req.body);
+	await found.save();
 	res.redirect(`/campgrounds/${req.params.id}`);
 })
 );
 
 router.delete("/:id", isLoggedin, isAuthor, wrapSync(async (req, res) => {
-	await Campground.findByIdAndDelete(req.params.id);
+	const camp = await Campground.findByIdAndDelete(req.params.id);
+	cloudinary.uploader.destroy(camp.image.filename);
 	req.flash("success", "Deleted the Campground");
 	res.redirect(`/campgrounds`);
 })
