@@ -7,6 +7,10 @@ const multer = require("multer");
 const { storage, cloudinary } = require("../cloudinary/index");
 const upload = multer({ storage });
 
+//mapbox
+const mbxgeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const geocoding = mbxgeocoding({ accessToken: process.env.MAPBOX_TOKEN });
+
 
 //utils
 const wrapSync = require("../utils/catchAsync"); //WrapAsync function
@@ -64,9 +68,16 @@ router.get("/:id", wrapSync(async (req, res) => {
 //post routes
 router.post("/new", isLoggedin, upload.single('image'), wrapSync(async (req, res, next) => {
 	const newGround = new Campground(req.body);
+	const geoCode = await geocoding.forwardGeocode({
+		query: req.body.location,
+		limit: 1
+	}).send();
+	newGround.geometry = geoCode.body.features[0].geometry;
 	newGround.author = req.user.id;
-	newGround.image.url = req.file.path;
-	newGround.image.filename = req.file.filename;
+	if (req.file) {
+		newGround.image.url = req.file.path;
+		newGround.image.filename = req.file.filename;
+	}
 	await newGround.save();
 	req.flash("success", "Added a new Campground");
 	res.redirect("/campgrounds");
@@ -78,6 +89,11 @@ router.put("/:id", isLoggedin, isAuthor, upload.single('image'), validateReqBody
 	if (found.image.url) {
 		cloudinary.uploader.destroy(found.image.filename);
 	}
+	const geoCode = await geocoding.forwardGeocode({
+		query: req.body.location,
+		limit: 1
+	}).send();
+	found.geometry = geoCode.body.features[0].geometry;
 	found.image.url = req.file.path;
 	found.image.filename = req.file.filename;
 	await found.updateOne(req.body);

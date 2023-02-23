@@ -13,6 +13,7 @@ const storage = new CloudinaryStorage({
     params: {
         folder: "Camping-Grouds",
         allowedFormats: ['jpeg', 'png', 'jpg'],
+        height: 720, width: 1280
     }
 });
 

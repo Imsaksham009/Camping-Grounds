@@ -1,6 +1,12 @@
 <% layout("boilerplate/boilerplate") -%>
 
+<script>
+    const mapToken = '<%= process.env.MAPBOX_TOKEN %>';
+    const coordinates = [<%= geometry.coordinates %>];
+</script>
 
+
+<div id='map' style='width: 1000px; height: 300px;'></div>
 
     <div class="row">
         <div class="col-6">
@@ -103,3 +109,5 @@
 
 
     </div>
+
+<script src="/js/mapbox.js"></script>
