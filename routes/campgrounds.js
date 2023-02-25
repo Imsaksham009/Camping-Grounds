@@ -72,7 +72,15 @@ router.post("/new", isLoggedin, upload.single('image'), wrapSync(async (req, res
 		query: req.body.location,
 		limit: 1
 	}).send();
-	newGround.geometry = geoCode.body.features[0].geometry;
+	if (geoCode.body.features.length) {
+		newGround.geometry = geoCode.body.features[0].geometry;
+	}
+	else {
+		newGround.geometry = {
+			type: "Point",
+			coordinates: [78.9629, 20.5937]
+		};
+	}
 	newGround.author = req.user.id;
 	if (req.file) {
 		newGround.image.url = req.file.path;
@@ -93,7 +101,15 @@ router.put("/:id", isLoggedin, isAuthor, upload.single('image'), validateReqBody
 		query: req.body.location,
 		limit: 1
 	}).send();
-	found.geometry = geoCode.body.features[0].geometry;
+	if (geoCode.body.features.length) {
+		found.geometry = geoCode.body.features[0].geometry;
+	}
+	else {
+		found.geometry = {
+			type: "Point",
+			coordinates: [78.9629, 20.5937]
+		};
+	}
 	found.image.url = req.file.path;
 	found.image.filename = req.file.filename;
 	await found.updateOne(req.body);

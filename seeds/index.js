@@ -3,6 +3,8 @@ const Campground = require("../model/campground");
 const cities = require(__dirname + "/seeds");
 const { descriptors, places } = require(__dirname + "/seedhelper");
 const axios = require("axios");
+const mbxgeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const geocoding = mbxgeocoding({ accessToken: 'pk.eyJ1IjoiaW1zYWtzaGFtMDA5IiwiYSI6ImNsZHp1eHIwYTA2eHEzdnA1YTZxanZlbzUifQ.ykF2XLKkNuJx2AkrEU7kKQ' });
 //mongoose connection
 
 mongoose
@@ -30,17 +32,24 @@ const getImg = async function () {
 
 const saveDB = async () => {
 	try {
-		await Campground.deleteMany({});
-		for (let i = 0; i < 35; i++) {
+		// await Campground.deleteMany({});
+		for (let i = 0; i < 50; i++) {
 			const randCityNum = Math.floor(Math.random() * 1000);
 			const randName1 = Math.floor(Math.random() * descriptors.length);
 			const randName2 = Math.floor(Math.random() * places.length);
 			const price = Math.floor(Math.random() * 20) + 10;
 			const img = await getImg();
+			const loc = `${cities[randCityNum].city}, ${cities[randCityNum].state}`;
+			const geoCode = await geocoding.forwardGeocode({
+				query: loc,
+				limit: 1
+			}).send();
+
 			const id = "63f275665eac714a5bb53f63";
 			const newGround = new Campground({
 				author: id,
-				location: `${cities[randCityNum].city}, ${cities[randCityNum].state}`,
+				location: loc,
+				geometry: geoCode.body.features[0].geometry,
 				title: `${descriptors[randName1]} ${places[randName2]}`,
 				image: {
 					url: img
