@@ -45,7 +45,7 @@
             <% if(currentUser){ %>
                 <h2 class="mt-3">Leave a Review</h2>
     
-                <form action="/campgrounds/<%= id %>/reviews" method="POST" class="needs-validation" novalidate>
+                <form action="/campgrounds/<%= id %>/reviews" method="POST" class="needs-validation mb-3" novalidate>
                     <div>
                         <label for="body" class="form-label">Review: </label>
                         <textarea class="form-control" name="body" id="body" cols="30" rows="3" required></textarea>
