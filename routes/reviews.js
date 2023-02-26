@@ -1,29 +1,15 @@
 const express = require("express");
-const Joi = require("joi");
 const wrapSync = require("../utils/catchAsync"); //WrapAsync function
 const AppError = require("../utils/Error"); //Apperror class
 
 const Campground = require("../model/campground");
 const Review = require("../model/reviews");
 
-const { isLoggedin, isReviewAuthor } = require("../middleware/middleware");
+const { isLoggedin, isReviewAuthor, validateReviewBody } = require("../middleware/middleware");
 
 const router = express.Router({ mergeParams: true });
 
-const validateReviewBody = function (req, res, next) {
-	const schema = Joi.object({
-		body: Joi.string().required(),
-		rating: Joi.number().required(),
-	}).validate(req.body);
 
-	if (schema.error) {
-		const msg = schema.error.details.map((er) => {
-			return er.message;
-		});
-		throw new AppError(msg, 400);
-	}
-	next();
-};
 
 router.post(
 	"/",

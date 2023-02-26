@@ -67,8 +67,8 @@ module.exports.isReviewAuthor = async (req, res, next) => {
 
 module.exports.needValidationForUser = function (req, res, next) {
 	const schema = Joi.object({
-		username: Joi.string().alphanum().min(3).max(30).required(),
-		email: Joi.string().required(),
+		username: Joi.string().alphanum().min(3).max(30).required().escapeHTML(),
+		email: Joi.string().required().escapeHTML(),
 		password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
 	}).validate(req.body);
 
@@ -76,24 +76,61 @@ module.exports.needValidationForUser = function (req, res, next) {
 		const msg = schema.error.details.map((er) => {
 			return er.message;
 		});
-		throw new AppError(msg, 400);
+		if (process.env.NODE_ENV !== 'production') {
+
+			throw new AppError(msg, 400);
+		}
+		else {
+			req.flash("error", msg);
+			return res.redirect(`/user/register`);
+		}
 	}
 	next();
 };
 
 module.exports.validateNewCampground = function (req, res, next) {
 	const schema = Joi.object({
-		title: Joi.string().required(),
-		price: Joi.number().min(0).required(),
-		description: Joi.string().required(),
-		location: Joi.string().required(),
+		title: Joi.string().required().escapeHTML(),
+		price: Joi.number().min(0).required().escapeHTML(),
+		description: Joi.string().required().escapeHTML(),
+		location: Joi.string().required().escapeHTML(),
 	}).validate(req.body);
 
 	if (schema.error) {
 		const msg = schema.error.details.map((er) => {
 			return er.message;
 		});
-		throw new AppError(msg, 400);
+		if (process.env.NODE_ENV !== 'production') {
+
+			throw new AppError(msg, 400);
+		}
+		else {
+			req.flash("error", msg);
+			return res.redirect(`/campgrounds/new`);
+		}
+	}
+	next();
+};
+
+
+module.exports.validateReviewBody = function (req, res, next) {
+	const schema = Joi.object({
+		body: Joi.string().required().escapeHTML(),
+		rating: Joi.number().required(),
+	}).validate(req.body);
+
+	if (schema.error) {
+		const msg = schema.error.details.map((er) => {
+			return er.message;
+		});
+		if (process.env.NODE_ENV !== 'production') {
+
+			throw new AppError(msg, 400);
+		}
+		else {
+			req.flash("error", msg);
+			return res.redirect(`/campgrounds/${req.params.id}`);
+		}
 	}
 	next();
 };
