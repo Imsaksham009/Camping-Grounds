@@ -11,22 +11,24 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const mongoSanitize = require('express-mongo-sanitize');
-const helmet = require("helmet");
 const AppError = require("./utils/Error"); //Apperror class
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/user");
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/reviews");
+const MongoStore = require('connect-mongo');
+
 
 
 const app = express();
 const PORT = 5000;
 
 
-//mongoose connection
+//mongoose connection   mongodb://127.0.0.1:27017/camp-grounds
+const dbURL = process.env.DB_URL;
 mongoose
 	.set("strictQuery", false)
-	.connect("mongodb://127.0.0.1:27017/camp-grounds")
+	.connect("mongodb://127.0.0.1:27017/camp-grounds" || dbURL)
 	.then(() => {
 		console.log("Database Connected");
 	})
@@ -50,12 +52,17 @@ app.use(session({
 		httpOnly: true,
 		maxAge: 7 * 24 * 60 * 60 * 1000,
 	},
+	store: MongoStore.create({
+		mongoUrl: "mongodb://127.0.0.1:27017/camp-grounds",
+		secret: process.env.SECRET,
+		collectionName: 'session',
+		touchAfter: 24 * 3600,
+	})
 })
 );
 
 //flash Messages
 app.use(flash());
-app.use(helmet({ contentSecurityPolicy: false }));
 
 //user model for passport
 const User = require("./model/user");
