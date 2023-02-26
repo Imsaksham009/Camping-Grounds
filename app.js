@@ -21,14 +21,14 @@ const MongoStore = require('connect-mongo');
 
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 
 //mongoose connection   mongodb://127.0.0.1:27017/camp-grounds
 const dbURL = process.env.DB_URL;
 mongoose
 	.set("strictQuery", false)
-	.connect("mongodb://127.0.0.1:27017/camp-grounds" || dbURL)
+	.connect(dbURL)
 	.then(() => {
 		console.log("Database Connected");
 	})
@@ -53,7 +53,7 @@ app.use(session({
 		maxAge: 7 * 24 * 60 * 60 * 1000,
 	},
 	store: MongoStore.create({
-		mongoUrl: "mongodb://127.0.0.1:27017/camp-grounds",
+		mongoUrl: dbURL,
 		secret: process.env.SECRET,
 		collectionName: 'session',
 		touchAfter: 24 * 3600,
