@@ -10,6 +10,8 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const mongoSanitize = require('express-mongo-sanitize');
+
 
 const AppError = require("./utils/Error"); //Apperror class
 
@@ -75,6 +77,9 @@ app.use((req, res, next) => {
 	res.locals.error = req.flash("error");
 	next();
 });
+
+app.use(mongoSanitize());
+
 
 
 
