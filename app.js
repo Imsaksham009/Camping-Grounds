@@ -54,8 +54,6 @@ app.use(session({
 })
 );
 
-
-
 //flash Messages
 app.use(flash());
 

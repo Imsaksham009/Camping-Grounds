@@ -1,8 +1,31 @@
-const Joi = require("Joi");
 const AppError = require("../utils/Error");
 const catchAsync = require("../utils/catchAsync");
 const Campground = require("../model/campground");
 const Review = require("../model/reviews");
+const BaseJoi = require('joi');
+const sanitizeHtml = require('sanitize-html');
+
+const extension = (joi) => ({
+	type: 'string',
+	base: joi.string(),
+	messages: {
+		'string.escapeHTML': '{{#label}} must not include HTML!'
+	},
+	rules: {
+		escapeHTML: {
+			validate(value, helpers) {
+				const clean = sanitizeHtml(value, {
+					allowedTags: [],
+					allowedAttributes: {},
+				});
+				if (clean !== value) return helpers.error('string.escapeHTML', { value });
+				return clean;
+			}
+		}
+	}
+});
+
+const Joi = BaseJoi.extend(extension);
 
 module.exports.isLoggedin = function (req, res, next) {
 	if (!req.isAuthenticated()) {
