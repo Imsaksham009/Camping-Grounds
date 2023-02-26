@@ -11,18 +11,17 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const mongoSanitize = require('express-mongo-sanitize');
-
-
+const helmet = require("helmet");
 const AppError = require("./utils/Error"); //Apperror class
+const mongoose = require("mongoose");
+const userRoutes = require("./routes/user");
+const campgroundRoutes = require("./routes/campgrounds");
+const reviewRoutes = require("./routes/reviews");
+
 
 const app = express();
 const PORT = 5000;
 
-const mongoose = require("mongoose");
-
-const userRoutes = require("./routes/user");
-const campgroundRoutes = require("./routes/campgrounds");
-const reviewRoutes = require("./routes/reviews");
 
 //mongoose connection
 mongoose
@@ -56,6 +55,7 @@ app.use(session({
 
 //flash Messages
 app.use(flash());
+app.use(helmet({ contentSecurityPolicy: false }));
 
 //user model for passport
 const User = require("./model/user");
