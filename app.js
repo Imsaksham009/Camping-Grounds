@@ -83,6 +83,10 @@ app.use("/user", userRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/reviews", reviewRoutes);
 
+app.get("/", (req, res) => {
+	res.render("home");
+});
+
 //Page not found error
 app.all("*", (req, res, next) => {
 	next(new AppError("PAGE NOT FOUND", 404));
