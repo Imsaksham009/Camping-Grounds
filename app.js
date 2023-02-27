@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 5000;
 
 
 //mongoose connection   mongodb://127.0.0.1:27017/camp-grounds
-const dbURL = process.env.DB_URL;
+const dbURL = "mongodb://127.0.0.1:27017/camp-grounds" || process.env.DB_URL;
 mongoose
 	.set("strictQuery", false)
 	.connect(dbURL)
@@ -49,7 +49,6 @@ app.use(session({
 	saveUninitialized: true,
 	cookie: {
 		httpOnly: true,
-		secure: true,
 		maxAge: 7 * 24 * 60 * 60 * 1000,
 	},
 	store: MongoStore.create({
