@@ -8,7 +8,7 @@ const geocoding = mbxgeocoding({ accessToken: 'pk.eyJ1IjoiaW1zYWtzaGFtMDA5IiwiYS
 //mongoose connection
 
 mongoose
-	.connect("mongodb://127.0.0.1:27017/camp-grounds")
+	.connect("mongodb+srv://imsaksham009:1tFxUnVWP182pdjo@cluster0.dufmwt6.mongodb.net/camp-grounds?retryWrites=true&w=majority")
 	.then(() => {
 		console.log("Database Connected");
 	})
@@ -32,7 +32,7 @@ const getImg = async function () {
 
 const saveDB = async () => {
 	try {
-		// await Campground.deleteMany({});
+		await Campground.deleteMany({});
 		for (let i = 0; i < 50; i++) {
 			const randCityNum = Math.floor(Math.random() * 1000);
 			const randName1 = Math.floor(Math.random() * descriptors.length);
@@ -45,7 +45,7 @@ const saveDB = async () => {
 				limit: 1
 			}).send();
 
-			const id = "63f275665eac714a5bb53f63";
+			const id = "63fbb34249d2b4fa2154a77c";
 			const newGround = new Campground({
 				author: id,
 				location: loc,
