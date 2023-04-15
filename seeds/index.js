@@ -32,7 +32,7 @@ const getImg = async function () {
 
 const saveDB = async () => {
 	try {
-		await Campground.deleteMany({});
+		// await Campground.deleteMany({});
 		for (let i = 0; i < 50; i++) {
 			const randCityNum = Math.floor(Math.random() * 1000);
 			const randName1 = Math.floor(Math.random() * descriptors.length);

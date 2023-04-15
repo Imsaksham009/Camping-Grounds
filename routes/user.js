@@ -32,7 +32,14 @@ router.post("/register", needValidation, async (req, res) => {
 });
 
 router.get("/login", (req, res) => {
-	if (req.isAuthenticated()) res.redirect("/campgrounds");
+
+	if (req.isAuthenticated()) {
+		if (req.session.returnTo === '/user/login') res.redirect("/user/login");
+		else {
+			const redirectPath = req.session.returnTo || '/campgrounds';
+			res.redirect(redirectPath);
+		}
+	}
 	res.render("./users/login");
 });
 

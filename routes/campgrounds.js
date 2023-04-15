@@ -51,6 +51,7 @@ router.get("/:id/edit", isLoggedin, isAuthor, wrapSync(async (req, res) => {
 
 //id
 router.get("/:id", wrapSync(async (req, res) => {
+	req.session.returnTo = req.originalUrl;
 	const { id } = req.params;
 	const foundGround = await Campground.findById(id).populate("reviews").populate("author");
 	if (!foundGround) {
